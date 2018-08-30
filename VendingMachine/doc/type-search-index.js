@@ -1,0 +1,1 @@
+typeSearchIndex = [{"p":"vendingMachine","l":"VendingMachine"},{"p":"vendingMachine","l":"VendingMachine.Coin"},{"p":"vendingMachine","l":"VendingMachine.Item"},{"p":"vendingMachine","l":"VendingMachine.ItemRow"}]
