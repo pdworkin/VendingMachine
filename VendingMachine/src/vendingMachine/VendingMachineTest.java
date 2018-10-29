@@ -11,9 +11,9 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.jupiter.api.Test;
 
-import vendingMachine.VendingMachine.Coin;
-import vendingMachine.VendingMachine.Item;
-import vendingMachine.VendingMachine.ItemRow;
+import vendingMachine.Coin;
+import vendingMachine.Item;
+import vendingMachine.ItemRow;
 
 import static org.junit.jupiter.api.Assertions.*;
 

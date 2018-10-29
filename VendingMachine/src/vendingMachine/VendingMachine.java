@@ -83,197 +83,6 @@ public class VendingMachine {
 	}
 	
 	
-	/**
-	 * Represents a Coin. When adding more, keep them in numerically ascending order.
-	 * <p>
-	 * Warning: This class uses ordinals for iteration purposes.
-	 */
-	enum Coin {
-		NICKLE(0.05), DIME(0.10), QUARTER(0.25), HALFDOLLAR(0.50),
-		DOLLARCOIN(1.00);
-		
-		private double value;
-		public static final Coin values[] = values();
-		   
-		private Coin(double value) {
-			this.value = value;
-		}
-		
-		public double getValue() {
-			return this.value;
-		}
-		
-		public static boolean isCoin(String str) {
-			return Coin.toCoin(str) != null;
-		}
-		
-		public static Coin toCoin(int ord) {
-			if (ord >= 0 && ord<values.length)
-				return values[ord];
-			return null;
-		}
-		
-		public static Coin toCoin(String text) {
-			try {
-				return Coin.valueOf(text.toUpperCase());
-			} catch (IllegalArgumentException e) {
-				return null;
-			}
-		}
-			
-		public static final Coin MAX = Coin.toCoin(values.length-1);
-		
-		public Coin pred() {
-			return Coin.toCoin(this.ordinal()-1);
-		}
-		
-		public static String allToString() {
-			return "[" + Arrays.stream(Coin.values())
-			.map(c -> c.toString() + ":" + c.value)
-			.collect(Collectors.joining(", "))
-			+ "]";
-		}
-	}
-	
-	/**
-	 * An Item holds a name, type, and price for one object for sale.  Two Item's are
-	 * {@code equal()} if their contents match.
-	 */
-	final class Item {
-		final private String name;
-		final private String type;
-		final private double price;
-		
-		Item(String name, String type, double price) {
-			this.name = name;
-			this.type = type;
-			this.price = price;
-		}
-
-		public String getName() {
-			return name;
-		}
-
-		public String getType() {
-			return type;
-		}
-
-		public double getPrice() {
-			return price;
-		}
-
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + getOuterType().hashCode();
-			result = prime * result + ((name == null) ? 0 : name.hashCode());
-			long temp;
-			temp = Double.doubleToLongBits(price);
-			result = prime * result + (int) (temp ^ (temp >>> 32));
-			result = prime * result + ((type == null) ? 0 : type.hashCode());
-			return result;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			Item other = (Item) obj;
-			if (!getOuterType().equals(other.getOuterType()))
-				return false;
-			if (name == null) {
-				if (other.name != null)
-					return false;
-			} else if (!name.equals(other.name))
-				return false;
-			if (Double.doubleToLongBits(price) != Double.doubleToLongBits(other.price))
-				return false;
-			if (type == null) {
-				if (other.type != null)
-					return false;
-			} else if (!type.equals(other.type))
-				return false;
-			return true;
-		}
-
-		private VendingMachine getOuterType() {
-			return VendingMachine.this;
-		}
-
-		@Override
-		public String toString() {			
-			return String.format("%s - %s ($%.2f)", name, type, price);
-		}
-	}
-	
-	/**
-	 * A ItemRow represents a group of the same Item with of a certain size along
-	 * with what label to file it under.  You cannot store Items of different types
-	 * under he same label.  The only method of interest is {@code vendItem()} which is called
-	 * to actually dispense an item from some row.
-	 */
-	class ItemRow implements Comparable<ItemRow> {
-		Item item;
-		int count = 0;
-		String label;
-		
-		ItemRow(String name, String type, double price,
-					int count, String label) {
-			this.item = new Item(name, type, price);
-			this.count = count;
-			this.label = label;
-		}
-		
-		public Item getItem() {
-			return item;
-		}
-		public int getCount() {
-			return count;
-		}
-		public String getLabel() {
-			return label;
-		}
-		
-		public void setItem(Item item) {
-			this.item = item;
-		}
-		public void setCount(int count) {
-			this.count = count;
-		}
-		public void setLabel(String label) {
-			this.label = label;
-		}
-
-		@Override
-		public String toString() {
-			return label + ": " + item;
-		}
-		
-		@Override
-		public int compareTo(ItemRow other) {
-			if (other instanceof ItemRow) {
-				return this.label.compareTo(((ItemRow) other).label);
-			}
-			return -1;	
-		}
-		
-		Item vendItem() {		
-			System.out.println("Vending: " + this.getItem());
-			
-			if (--this.count <= 0) {
-				machineContents.remove(this);
-			}
-			
-			return this.getItem();
-		}
-	}
-	
-	
 	// Awful little utility I had to write as penance for using doubles to 
 	// represent money.  Addition works OK, but subtraction of doubles is unstable,
 	// so we have to do it carefully.
@@ -322,7 +131,7 @@ public class VendingMachine {
 			return false;
 		
 		// don't use more of the coin than can fit
-		int max = (int) Math.floor(remaining/coin.value);	
+		int max = (int) Math.floor(remaining/coin.getValue());	
 
 		// use both the coins in the machine and the purchase buffer to make change
 		max = Math.min(max, coinsInMachine.getOrDefault(coin, 0)  
@@ -330,7 +139,7 @@ public class VendingMachine {
 
 		// start with a lot of the coin and work your way down to fewer, including 0 of them
 		for (int i=max; i>=0; i--) {						
-			double tmp = subtractDouble(remaining, i*coin.value);       
+			double tmp = subtractDouble(remaining, i*coin.getValue());       
 			
 			// if we have satisfied the remainder or any recurse does it, report success upward
 			if (tmp == 0.00 || makeChangeHelper(tmp, coin.pred())) {  
@@ -473,6 +282,17 @@ public class VendingMachine {
 		return tmp;
 	}
 	
+	
+	// Actually vend item.
+	Item vendItem(ItemRow ir) {		
+		System.out.println("Vending: " + ir.getItem());
+		
+		if (--ir.count <= 0) {
+			machineContents.remove(ir);
+		}
+		
+		return ir.getItem();
+	}
 
 	/**
 	 * Finds what Item the given label points to and if the user can afford it, and 
@@ -492,7 +312,7 @@ public class VendingMachine {
 			double deficit = subtractDouble(valueInPurchase(), ic.getItem().getPrice()); 
 			if (deficit >= 0.00) {
 				if (makeChange(deficit)) {
-					ic.vendItem();
+					vendItem(ic);
 					return ic.getItem();
 				} else {
 					System.out.println("Machine can not make change with the cash on hand.  Insert more money or ask for refund");
@@ -561,3 +381,140 @@ public class VendingMachine {
 	}
 	}
 	
+
+/**
+ * Represents a Coin. When adding more, keep them in numerically ascending order.
+ * <p>
+ * Warning: This class uses ordinals for iteration purposes.
+ */
+enum Coin {
+	NICKLE(0.05), DIME(0.10), QUARTER(0.25), HALFDOLLAR(0.50),
+	DOLLARCOIN(1.00);
+	
+	private double value;
+	public static final Coin values[] = values();
+	   
+	private Coin(double value) {
+		this.value = value;
+	}
+	
+	public double getValue() {
+		return this.value;
+	}
+	
+	public static boolean isCoin(String str) {
+		return Coin.toCoin(str) != null;
+	}
+	
+	public static Coin toCoin(int ord) {
+		if (ord >= 0 && ord<values.length)
+			return values[ord];
+		return null;
+	}
+	
+	public static Coin toCoin(String text) {
+		try {
+			return Coin.valueOf(text.toUpperCase());
+		} catch (IllegalArgumentException e) {
+			return null;
+		}
+	}
+		
+	public static final Coin MAX = Coin.toCoin(values.length-1);
+	
+	public Coin pred() {
+		return Coin.toCoin(this.ordinal()-1);
+	}
+	
+	public static String allToString() {
+		return "[" + Arrays.stream(Coin.values())
+		.map(c -> c.toString() + ":" + c.value)
+		.collect(Collectors.joining(", "))
+		+ "]";
+	}
+}
+
+/**
+ * An Item holds a name, type, and price for one object for sale.  Two Item's are
+ * {@code equal()} if their contents match.
+ */
+class Item {
+	private String name;
+	private String type;
+	private double price;
+	
+	Item(String name, String type, double price) {
+		this.name = name;
+		this.type = type;
+		this.price = price;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public double getPrice() {
+		return price;
+	}
+
+	@Override
+	public String toString() {			
+		return String.format("%s - %s ($%.2f)", name, type, price);
+	}
+}
+
+/**
+ * A ItemRow represents a group of the same Item with of a certain size along
+ * with what label to file it under.  You cannot store Items of different types
+ * under he same label.  The only method of interest is {@code vendItem()} which is called
+ * to actually dispense an item from some row.
+ */
+class ItemRow implements Comparable<ItemRow> {
+	Item item;
+	int count = 0;
+	String label;
+	
+	ItemRow(String name, String type, double price,
+				int count, String label) {
+		this.item = new Item(name, type, price);
+		this.count = count;
+		this.label = label;
+	}
+	
+	public Item getItem() {
+		return item;
+	}
+	public int getCount() {
+		return count;
+	}
+	public String getLabel() {
+		return label;
+	}
+	
+	public void setItem(Item item) {
+		this.item = item;
+	}
+	public void setCount(int count) {
+		this.count = count;
+	}
+	public void setLabel(String label) {
+		this.label = label;
+	}
+
+	@Override
+	public String toString() {
+		return label + ": " + item;
+	}
+	
+	@Override
+	public int compareTo(ItemRow other) {
+		if (other instanceof ItemRow) {
+			return this.label.compareTo(((ItemRow) other).label);
+		}
+		return -1;	
+	}
+}
