@@ -1,0 +1,1 @@
+typeSearchIndex = [{"p":"com.heyho.demo.vendingmachine","l":"VendingMachine"}]

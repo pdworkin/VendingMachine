@@ -1,0 +1,1 @@
+memberSearchIndex = [{"p":"com.heyho.demo.vendingmachine","c":"VendingMachine","l":"main(String...)","url":"main-java.lang.String...-"},{"p":"com.heyho.demo.vendingmachine","c":"VendingMachine","l":"VendingMachine()"}]
