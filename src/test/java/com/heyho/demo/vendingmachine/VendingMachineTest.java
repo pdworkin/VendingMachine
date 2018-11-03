@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.*;
 * @version 1.1
 * @since   2018-08=26
 */
-class VendingMachineTest {
+public class VendingMachineTest {
 	VendingMachine vm = new VendingMachine();
 
 	

@@ -46,7 +46,7 @@ public class VendingMachine {
 	 * 
 	 * @return List of items for restocking
 	 */
-	List<ItemRow> retrieveRestockGoods() {
+	public List<ItemRow> retrieveRestockGoods() {
 		// normally we would get the restock data from a file or service
 		return  new ArrayList<>(Arrays.asList(
 				new ItemRow("Abar", "Chocoate", 0.75, 3, "A1"),
@@ -66,12 +66,12 @@ public class VendingMachine {
 	 * a default number is used.
 	 * @return Map telling how many of each kind of Coin to use
 	 */
-	Map<Coin, Integer> retrieveRestockMoney(int number) {
+	public Map<Coin, Integer> retrieveRestockMoney(int number) {
 		Map<Coin, Integer> map = new HashMap<>();
 		Arrays.stream(Coin.values()).forEach(c -> map.put(c, number));
 		return map;
 	}
-	Map<Coin, Integer> retrieveRestockMoney() {
+	public Map<Coin, Integer> retrieveRestockMoney() {
 		return retrieveRestockMoney(3);
 	}
 	
@@ -84,7 +84,7 @@ public class VendingMachine {
 	
 	
 	// Awful little utility I had to write as penance for using doubles to 
-	// represent money.  Addition works OK, but subtraction of doubles is unstable,
+	// represent money.  Addition worked OK, but subtraction of doubles is unstable,
 	// so we have to do it carefully.
 	// TODO: convert over to integer cents with a standard formatting method.
 	double subtractDouble(double first, double second) {
@@ -170,7 +170,7 @@ public class VendingMachine {
 	 * @param amount  Amount of change to make
 	 * @return        True if a combination of change was found
 	 */
-	boolean makeChange(double amount) {		
+	public boolean makeChange(double amount) {		
 		System.out.print("Change: ");
 		if (makeChangeHelper(amount, Coin.MAX)) {
 			if (amount == 0.00)
@@ -197,7 +197,7 @@ public class VendingMachine {
 	 * 
 	 * @return The contents of the machine for testing purposes
 	 */
-	List<ItemRow> listGoods() {
+	public List<ItemRow> listGoods() {
 		System.out.format("Vending machine contains:%n%n");
 		if (this.machineContents.size() == 0)
 			System.out.println("Empty");
@@ -226,7 +226,7 @@ public class VendingMachine {
 	 * If null, no action will be taken on the machine's money.
 	 * @return       The updated contents of the machine.  For testing purposes.
 	 */
-	List<ItemRow> restockMachine(List<ItemRow> goods, Map<Coin, Integer> money) {
+	public List<ItemRow> restockMachine(List<ItemRow> goods, Map<Coin, Integer> money) {
 		if (money != null)
 			coinsInMachine = money;   //TODO: should clone
 
@@ -261,7 +261,7 @@ public class VendingMachine {
 	 * @param coin   The coin to add
 	 * @return       The total now in the machine.  For testing purposes.
 	 */
-	double doCoin(Coin coin) {
+	public double doCoin(Coin coin) {
 		coinsInPurchase.merge(coin, 1, (current, valnew) -> current+1);
 		
 		System.out.format("Adding credit: $%.2f%n", coin.getValue());
@@ -274,7 +274,7 @@ public class VendingMachine {
 	 * 
 	 * @return The total refunded.  For testing purposes.
 	 */
-	double doRefund() {
+	public double doRefund() {
 		double tmp = valueInPurchase();
 		System.out.format("Refunding: %.2f%n", tmp);
 		coinsInPurchase = new HashMap<>();
@@ -302,7 +302,7 @@ public class VendingMachine {
 	 * @return        For testing purposes: if successfully vending, the item vended; if 
 	 * the price is too high, the extra amount needed; otherwise null.
 	 */
-	Object doLabel(String label) {
+	public Object doLabel(String label) {
  		List<ItemRow> matches = getLabelsThatMatch(label);
 				
  		if (matches.size() == 1) {
@@ -332,7 +332,7 @@ public class VendingMachine {
 	 * Main loop for exercising the functionality of the VendingMachine.  Displays 
 	 * machine state and then prompts for an command.  Repeats until it receives "quit".
 	 */
-	void mainLoop() {
+	public void mainLoop() {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 		String line;
 		
@@ -374,184 +374,15 @@ public class VendingMachine {
 	
 	
 	// Main() for testing.  Creates a VendingMachiine, stocks it, and starts it running.
+	/**
+	 * Entry point for project vendingmachine.
+	 * 
+	 * @param args Command line args.
+	 */
 	public static void main(String... args) {
 		VendingMachine vm = new VendingMachine();
 		vm.restockMachine(vm.retrieveRestockGoods(), vm.retrieveRestockMoney());
 
 		vm.mainLoop();
-	}
-	}
-	
-
-/**
- * Represents a Coin. When adding more, keep them in numerically ascending order.
- * <p>
- * Warning: This class uses ordinals for iteration purposes.
- */
-enum Coin {
-	NICKLE(0.05), DIME(0.10), QUARTER(0.25), HALFDOLLAR(0.50),
-	DOLLARCOIN(1.00);
-	
-	private double value;
-	public static final Coin values[] = values();
-	   
-	private Coin(double value) {
-		this.value = value;
-	}
-	
-	public double getValue() {
-		return this.value;
-	}
-	
-	public static boolean isCoin(String str) {
-		return Coin.toCoin(str) != null;
-	}
-	
-	public static Coin toCoin(int ord) {
-		if (ord >= 0 && ord<values.length)
-			return values[ord];
-		return null;
-	}
-	
-	public static Coin toCoin(String text) {
-		try {
-			return Coin.valueOf(text.toUpperCase());
-		} catch (IllegalArgumentException e) {
-			return null;
-		}
-	}
-		
-	public static final Coin MAX = Coin.toCoin(values.length-1);
-	
-	public Coin pred() {
-		return Coin.toCoin(this.ordinal()-1);
-	}
-	
-	public static String allToString() {
-		return "[" + Arrays.stream(Coin.values())
-		.map(c -> c.toString() + ":" + c.value)
-		.collect(Collectors.joining(", "))
-		+ "]";
-	}
-}
-
-/**
- * An Item holds a name, type, and price for one object for sale.  Two Item's are
- * {@code equal()} if their contents match.
- */
-class Item {
-	private String name;
-	private String type;
-	private double price;
-	
-	Item(String name, String type, double price) {
-		this.name = name;
-		this.type = type;
-		this.price = price;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public String getType() {
-		return type;
-	}
-
-	public double getPrice() {
-		return price;
-	}
-	
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		long temp;
-		temp = Double.doubleToLongBits(price);
-		result = prime * result + (int) (temp ^ (temp >>> 32));
-		result = prime * result + ((type == null) ? 0 : type.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Item other = (Item) obj;
-		if (name == null) {
-			if (other.name != null)
-				return false;
-		} else if (!name.equals(other.name))
-			return false;
-		if (Double.doubleToLongBits(price) != Double.doubleToLongBits(other.price))
-			return false;
-		if (type == null) {
-			if (other.type != null)
-				return false;
-		} else if (!type.equals(other.type))
-			return false;
-		return true;
-	}
-
-	@Override
-	public String toString() {			
-		return String.format("%s - %s ($%.2f)", name, type, price);
-	}
-}
-
-/**
- * A ItemRow represents a group of the same Item with of a certain size along
- * with what label to file it under.  You cannot store Items of different types
- * under he same label.  The only method of interest is {@code vendItem()} which is called
- * to actually dispense an item from some row.
- */
-class ItemRow implements Comparable<ItemRow> {
-	Item item;
-	int count = 0;
-	String label;
-	
-	ItemRow(String name, String type, double price,
-				int count, String label) {
-		this.item = new Item(name, type, price);
-		this.count = count;
-		this.label = label;
-	}
-	
-	public Item getItem() {
-		return item;
-	}
-	public int getCount() {
-		return count;
-	}
-	public String getLabel() {
-		return label;
-	}
-	
-	public void setItem(Item item) {
-		this.item = item;
-	}
-	public void setCount(int count) {
-		this.count = count;
-	}
-	public void setLabel(String label) {
-		this.label = label;
-	}
-
-	@Override
-	public String toString() {
-		return label + ": " + item;
-	}
-	
-	@Override
-	public int compareTo(ItemRow other) {
-		if (other instanceof ItemRow) {
-			return this.label.compareTo(((ItemRow) other).label);
-		}
-		return -1;	
 	}
 }

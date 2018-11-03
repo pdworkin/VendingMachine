@@ -10,7 +10,8 @@ The model I'm using is one of those glass fronted machines with a different item
 
 ## To Run
 A precompiled jar file is included in the repository so you can just do:
-```java -jar target/vendingmachine-1.1.jar
+```
+java -jar target/vendingmachine-1.1.jar
 ```
 
 To remake from source do:
@@ -23,7 +24,7 @@ To run the JUnit tests do:
 mvn test
 ```
 
-Javadocs are in <code><target/site/apidocs/>code>.  To remake them, do:
+Javadocs are in <code>target/site/apidocs/index.html</code>.  To remake them, do:
 ```
 mvn javadoc:javadoc
 ```
