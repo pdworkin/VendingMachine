@@ -14,15 +14,18 @@ A precompiled jar file is included in the repository so you can just do:
 ```
 
 To remake from source do:
-```mvn clean; mvn package
+```
+mvn clean; mvn package
 ```
 
 To run the JUnit tests do:
-```mvn test
+```
+mvn test
 ```
 
-Api docs are in <code><target/site/apidocs//code>.  To remake them, do:
-```mvn javadoc:javadoc
+Javadocs are in <code><target/site/apidocs/>code>.  To remake them, do:
+```
+mvn javadoc:javadoc
 ```
 
 ## Operation
