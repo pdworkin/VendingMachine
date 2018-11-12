@@ -1,1 +1,0 @@
-typeSearchIndex = [{"p":"com.heyho.demo.vendingmachine","l":"Coin"},{"p":"com.heyho.demo.vendingmachine","l":"Item"},{"p":"com.heyho.demo.vendingmachine","l":"ItemRow"},{"p":"com.heyho.demo.vendingmachine","l":"VendingMachine"}]

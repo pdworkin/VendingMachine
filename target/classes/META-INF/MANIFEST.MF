@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Built-By: adminuser
+Build-Jdk: 9
+Main-Class: com.heyho.demo.vendingmachine.VendingMachine
+Created-By: Maven Integration for Eclipse
+
